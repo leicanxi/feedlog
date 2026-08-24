@@ -54,15 +54,18 @@ watch(() => route.path, () => { mobileNavOpen.value = false })
 
 <template>
   <div class="min-h-screen flex flex-col bg-background text-foreground font-body">
-    <!-- Top navigation bar -->
-    <header class="fixed top-0 left-0 right-0 z-50 border-b border-border bg-background/80 backdrop-blur-md w-full transition-colors duration-300">
+    <!-- Editorial navigation: quiet framing, one clear action, and no competing card chrome. -->
+    <header class="fixed inset-x-0 top-0 z-50 w-full border-b border-border/80 bg-background/95 backdrop-blur-sm transition-colors duration-300">
       <!-- Main bar -->
-      <div class="h-14 md:h-20 flex items-center justify-between px-4 md:px-6 lg:px-10">
+      <div class="mx-auto flex h-16 w-full max-w-[1440px] items-center justify-between px-4 sm:px-6 lg:h-[72px] lg:px-10">
         <!-- Left: Hamburger (mobile) + Logo + Navigation (desktop) -->
-        <div class="flex items-center gap-3 md:gap-10">
+        <div class="flex items-center gap-3 md:gap-12">
           <!-- Mobile hamburger -->
           <button
-            class="md:hidden w-9 h-9 flex items-center justify-center rounded-lg hover:bg-secondary transition-colors text-muted-foreground"
+            class="md:hidden flex size-11 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+            type="button"
+            :aria-label="mobileNavOpen ? '关闭导航' : '打开导航'"
+            :aria-expanded="mobileNavOpen"
             @click="mobileNavOpen = !mobileNavOpen"
           >
             <Icon :name="mobileNavOpen ? 'lucide:x' : 'lucide:menu'" size="20" />
@@ -70,22 +73,21 @@ watch(() => route.path, () => { mobileNavOpen.value = false })
 
           <AppBrand />
 
-          <nav class="hidden md:flex items-center gap-8">
+          <nav class="hidden items-center gap-7 md:flex" aria-label="主导航">
             <NuxtLink
               v-for="item in navItems"
               :key="item.to"
               :to="localePath(item.to)"
-              class="flex items-center text-sm font-bold tracking-wide text-muted-foreground hover:text-foreground transition-colors"
-              active-class="!text-primary"
+              class="nav-link"
+              active-class="is-active"
             >
-              <Icon :name="item.icon" size="18" class="mr-2" />
               {{ $t(item.key) }}
             </NuxtLink>
           </nav>
         </div>
 
         <!-- Right side -->
-        <div class="flex items-center gap-3 md:gap-4 lg:gap-6">
+        <div class="flex items-center gap-1.5 sm:gap-2.5">
           <ThemeSwitcher />
           <LocaleSwitcher />
 
@@ -95,7 +97,7 @@ watch(() => route.path, () => { mobileNavOpen.value = false })
             v-if="canEnterDashboard"
             as-child
             variant="secondary"
-            class="hidden md:inline-flex"
+            class="hidden rounded-full border-0 bg-transparent px-3 shadow-none hover:bg-secondary md:inline-flex"
           >
             <NuxtLink :to="localePath('/dashboard')">
               <Icon name="lucide:layout-dashboard" size="18" />
@@ -106,7 +108,7 @@ watch(() => route.path, () => { mobileNavOpen.value = false })
           <NuxtLink
             v-if="canEnterDashboard"
             :to="localePath('/dashboard')"
-            class="md:hidden w-9 h-9 flex items-center justify-center rounded-lg hover:bg-secondary transition-colors text-muted-foreground"
+            class="md:hidden flex size-11 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-secondary"
           >
             <Icon name="lucide:layout-dashboard" size="20" />
           </NuxtLink>
@@ -114,7 +116,7 @@ watch(() => route.path, () => { mobileNavOpen.value = false })
           <!-- Logged in: Avatar + Dropdown menu -->
           <DropdownMenu v-if="user">
             <DropdownMenuTrigger as-child>
-              <button class="flex items-center rounded-full border border-border bg-card hover:border-primary transition-colors focus:outline-none p-1">
+              <button class="flex items-center rounded-full border border-border bg-card p-1 transition-colors hover:border-foreground/35 focus:outline-none">
                 <Avatar class="w-8 h-8">
                   <img v-if="user.image && !avatarError" :src="user.image" :alt="user.name" class="aspect-square size-full rounded-full object-cover" referrerpolicy="no-referrer" @error="avatarError = true">
                   <!-- Brand accent (not a neutral gray) so identity chips carry the
@@ -147,7 +149,7 @@ watch(() => route.path, () => { mobileNavOpen.value = false })
           <!-- Not logged in: Sign in button -->
           <button
             v-if="!user"
-            class="flex items-center gap-2 font-heading font-semibold text-sm px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-all"
+            class="flex min-h-10 items-center gap-2 rounded-full bg-foreground px-4 py-2 font-heading text-sm font-semibold text-background transition-colors hover:bg-foreground/85 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
             @click="showLoginModal = true"
           >
             <Icon name="lucide:log-in" size="16" />
@@ -158,18 +160,17 @@ watch(() => route.path, () => { mobileNavOpen.value = false })
 
       <!-- Mobile expandable nav row -->
       <div
-        class="md:hidden overflow-hidden transition-all duration-200 ease-in-out"
+        class="mx-auto w-full max-w-[1440px] overflow-hidden transition-all duration-200 ease-in-out md:hidden"
         :style="{ maxHeight: mobileNavOpen ? '120px' : '0px' }"
       >
-        <nav class="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 px-4 py-2.5 min-h-12 border-t border-border/50">
+        <nav class="flex flex-col border-t border-border/70 px-4 py-2" aria-label="移动端主导航">
           <NuxtLink
             v-for="item in navItems"
             :key="item.to"
             :to="localePath(item.to)"
-            class="flex items-center gap-1.5 text-sm font-bold text-muted-foreground hover:text-foreground transition-colors"
-            active-class="!text-primary"
+            class="flex min-h-11 items-center text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground"
+            active-class="!text-foreground"
           >
-            <Icon :name="item.icon" size="16" />
             {{ $t(item.key) }}
           </NuxtLink>
         </nav>
@@ -181,8 +182,51 @@ watch(() => route.path, () => { mobileNavOpen.value = false })
     <ChangePasswordDialog v-model:open="showChangePassword" />
 
     <!-- Page content (header is position:fixed, so add top padding equal to header height) -->
-    <main class="flex-1 w-full max-w-[1200px] mx-auto flex flex-col md:flex-row gap-8 px-4 md:px-6 lg:px-10 pt-20 md:pt-28 pb-6 md:pb-8">
+    <main class="mx-auto flex w-full max-w-[1280px] flex-1 flex-col gap-8 px-4 pb-8 pt-24 sm:px-6 md:flex-row md:pt-28 lg:px-10 lg:pt-32">
       <slot />
     </main>
   </div>
 </template>
+
+<style scoped>
+.nav-link {
+  position: relative;
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  color: var(--muted-foreground);
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  transition: color 180ms ease;
+}
+
+.nav-link::after {
+  position: absolute;
+  right: 0;
+  bottom: 0.35rem;
+  left: 0;
+  height: 1px;
+  content: '';
+  transform: scaleX(0);
+  transform-origin: center;
+  background: currentColor;
+  transition: transform 180ms ease;
+}
+
+.nav-link:hover,
+.nav-link.is-active {
+  color: var(--foreground);
+}
+
+.nav-link:hover::after {
+  transform: scaleX(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-link,
+  .nav-link::after {
+    transition: none;
+  }
+}
+</style>

@@ -176,6 +176,10 @@ export function deriveNeutralVars(isDark: boolean): Record<string, string> {
 export function derivePortalThemeVars(seedHex: string, isDark: boolean): Record<string, string> {
   return {
     ...deriveNeutralVars(isDark),
+    // Organization branding previously replaced the portal's warm light
+    // background with a neutral gray. Keep the requested literal value here
+    // so it remains stable even when a brand color is configured.
+    ...(!isDark ? { '--background': '#FAF9F5', '--muted': '#FAF9F5' } : {}),
     ...deriveBrandVars(seedHex, isDark),
   }
 }

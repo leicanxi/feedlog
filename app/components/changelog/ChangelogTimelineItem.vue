@@ -87,10 +87,10 @@ function badgeClass(cat: string) {
         </NuxtLink>
 
         <div class="relative">
-          <div class="p-3 sm:p-4 md:p-5 space-y-2.5 sm:space-y-3" :class="mobileExpanded ? '' : 'max-sm:max-h-[32rem] max-sm:overflow-hidden'">
+          <div class="p-3 sm:p-4 md:p-4 space-y-2.5 sm:space-y-3" :class="mobileExpanded ? '' : 'max-sm:max-h-[32rem] max-sm:overflow-hidden'">
             <!-- Title + categories -->
             <NuxtLink :to="localePath(`/changelog/${entry.slug}`)" class="group block touch-manipulation">
-              <h2 class="font-heading text-base sm:text-lg md:text-xl font-bold leading-snug break-words">
+              <h2 class="font-heading text-base sm:text-lg md:text-lg font-bold leading-snug break-words">
                 <span v-if="entry.categories.length > 0" class="mr-2 inline-flex flex-wrap items-center gap-1.5 align-middle">
                   <span v-for="cat in entry.categories" :key="cat" :class="badgeClass(cat)">
                     {{ CATEGORY_LABEL[cat] ?? cat }}

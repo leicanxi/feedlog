@@ -372,71 +372,101 @@ async function handleShare() {
     <div class="flex-1 min-w-0 space-y-6">
       <!-- Post card -->
       <div class="bg-card border border-border rounded-lg p-6 lg:p-8 shadow-sm">
-        <div class="flex flex-col md:flex-row gap-6">
-          <div v-if="!isMerged" class="flex flex-row md:flex-col items-center gap-3 shrink-0">
-            <button
-              class="upvote-btn w-14 h-[72px] rounded-md flex flex-col items-center justify-center gap-1 shadow-md border transition-transform hover:scale-105"
-              :class="post.hasVoted
-                ? 'bg-primary text-primary-foreground border-primary'
-                : 'bg-background text-foreground border-border hover:border-primary hover:text-primary'"
-              @click="handleVote"
-            >
-              <Icon name="lucide:chevron-up" size="28" />
-              <span class="font-heading font-bold text-lg">{{ post.voteCount }}</span>
-            </button>
-            <p class="text-[10px] font-bold uppercase tracking-wider text-muted-foreground text-center">{{ $t('post.detail.upvotes') }}</p>
+        <template v-if="editing">
+          <div class="space-y-4">
+            <Input v-model="editTitle" class="h-10 text-lg font-heading font-bold" :placeholder="$t('post.detail.titlePlaceholder')" :maxlength="200" />
+            <div class="editor-preview-styled">
+              <ThemedMdEditor v-model="editContent" language="en-US" :placeholder="$t('post.detail.editPlaceholder')" :preview="false" :max-length="10000" :toolbars="['bold', 'italic', 'strikeThrough', '-', 'title', 'unorderedList', 'orderedList', '-', 'link', 'image', 'code', 'codeRow', '-', 'previewOnly']" :sanitize="sanitizeAttachmentHtml" :style="{ height: '280px' }" @on-upload-img="onUploadImg" />
+            </div>
+            <p v-if="editError" class="text-sm text-destructive">{{ editError }}</p>
+            <div class="flex items-center gap-3 justify-end">
+              <button class="px-4 py-2 rounded-md text-sm font-medium text-muted-foreground hover:text-foreground transition-colors" @click="cancelEditPost">{{ $t('common.cancel') }}</button>
+              <button class="px-5 py-2 rounded-md bg-primary text-primary-foreground text-sm font-heading font-bold hover:bg-primary/90 transition-colors disabled:opacity-50" :disabled="editSaving" @click="saveEditPost">{{ editSaving ? $t('post.detail.saving') : $t('post.detail.saveChanges') }}</button>
+            </div>
           </div>
-          <div class="flex-1 min-w-0">
-            <template v-if="editing">
-              <div class="space-y-4">
-                <Input v-model="editTitle" class="h-10 text-lg font-heading font-bold" :placeholder="$t('post.detail.titlePlaceholder')" :maxlength="200" />
-                <div class="editor-preview-styled">
-                  <ThemedMdEditor v-model="editContent" language="en-US" :placeholder="$t('post.detail.editPlaceholder')" :preview="false" :max-length="10000" :toolbars="['bold', 'italic', 'strikeThrough', '-', 'title', 'unorderedList', 'orderedList', '-', 'link', 'image', 'code', 'codeRow', '-', 'previewOnly']" :sanitize="sanitizeAttachmentHtml" :style="{ height: '280px' }" @on-upload-img="onUploadImg" />
-                </div>
-                <p v-if="editError" class="text-sm text-destructive">{{ editError }}</p>
-                <div class="flex items-center gap-3 justify-end">
-                  <button class="px-4 py-2 rounded-md text-sm font-medium text-muted-foreground hover:text-foreground transition-colors" @click="cancelEditPost">{{ $t('common.cancel') }}</button>
-                  <button class="px-5 py-2 rounded-md bg-primary text-primary-foreground text-sm font-heading font-bold hover:bg-primary/90 transition-colors disabled:opacity-50" :disabled="editSaving" @click="saveEditPost">{{ editSaving ? $t('post.detail.saving') : $t('post.detail.saveChanges') }}</button>
-                </div>
-              </div>
-            </template>
-            <template v-else>
-              <div class="flex items-start gap-3 mb-3">
-                <div class="flex-1 min-w-0 flex items-center gap-2">
-                  <h2 class="font-heading text-2xl font-bold min-w-0 break-words">{{ post.title }}</h2>
-                  <!-- <span v-if="mergedCount > 0" class="inline-flex items-center gap-1 text-xs font-bold text-muted-foreground bg-secondary px-2 py-0.5 rounded-md shrink-0">
-                    <Icon name="lucide:git-merge" size="12" /> {{ mergedCount }}
-                  </span> -->
-                </div>
-                <div class="flex items-center gap-2 shrink-0 pt-1">
-                  <span class="text-xs font-medium text-muted-foreground flex items-center gap-1.5">
-                    <Icon name="lucide:clock" size="14" /> {{ timeAgo(post.createdAt) }}
-                  </span>
-                  <DropdownMenu v-if="isOrgManager && !isMerged">
-                    <DropdownMenuTrigger as-child>
-                      <button class="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-colors" :title="$t('post.merge.tooltip')"><Icon name="lucide:git-merge" size="18" /></button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" class="min-w-[200px]">
-                      <DropdownMenuItem class="text-xs font-bold gap-2" @click="openMergeDialog('bring')"><Icon name="lucide:arrow-down-left" size="14" /> {{ $t('post.merge.toThis') }}</DropdownMenuItem>
-                      <DropdownMenuItem class="text-xs font-bold gap-2" @click="openMergeDialog('push')"><Icon name="lucide:arrow-up-right" size="14" /> {{ $t('post.merge.thisInto') }}</DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                  <DropdownMenu v-if="showPostMenu">
-                    <DropdownMenuTrigger as-child>
-                      <button class="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-colors"><Icon name="lucide:more-horizontal" size="18" /></button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" class="min-w-[120px]">
-                      <DropdownMenuItem v-if="canEditPost" class="text-xs font-bold gap-2" @click="startEditPost"><Icon name="lucide:pencil" size="14" /> {{ $t('common.edit') }}</DropdownMenuItem>
-                      <DropdownMenuItem v-if="canDeletePost" class="text-xs font-bold gap-2 text-destructive" @click="handleDeletePost"><Icon name="lucide:trash-2" size="14" /> {{ $t('common.delete') }}</DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
-              </div>
-              <PostContent v-if="post.content" :content="post.content" />
-              <div v-else class="h-20 bg-muted rounded animate-pulse" />
-            </template>
+        </template>
+        <template v-else>
+          <div class="flex flex-wrap items-center gap-2 mb-4">
+            <DropdownMenu v-if="!isMerged && isOrgManager">
+              <DropdownMenuTrigger as-child>
+                <button
+                  class="inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-semibold leading-none transition-opacity hover:opacity-75"
+                  :style="{
+                    color: `var(${(STATUS_CONFIG[post.status as keyof typeof STATUS_CONFIG] ?? STATUS_CONFIG.open).cssVar})`,
+                    backgroundColor: `var(${(STATUS_CONFIG[post.status as keyof typeof STATUS_CONFIG] ?? STATUS_CONFIG.open).cssVar}-bg)`,
+                    borderColor: `var(${(STATUS_CONFIG[post.status as keyof typeof STATUS_CONFIG] ?? STATUS_CONFIG.open).cssVar}-border)`,
+                  }"
+                >
+                  {{ $t(statusLabelKey(post.status)) }}<Icon name="lucide:chevron-down" size="12" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" class="min-w-[160px]">
+                <DropdownMenuItem v-for="opt in STATUS_OPTIONS" :key="opt.value" class="text-xs font-medium gap-2" :class="post.status === opt.value ? 'font-bold' : ''" @click="handleStatusChange(opt.value)">
+                  <span class="w-4 shrink-0 flex items-center justify-center"><Icon v-if="post.status === opt.value" name="lucide:check" size="12" /></span>
+                  <div class="w-2.5 h-2.5 rounded-full" :style="{ backgroundColor: `var(${opt.cssVar})` }"></div> {{ $t(statusLabelKey(opt.value)) }}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <span
+              v-else-if="!isMerged"
+              class="inline-flex items-center rounded-full border px-2.5 py-1 text-[11px] font-semibold leading-none"
+              :style="{
+                color: `var(${(STATUS_CONFIG[post.status as keyof typeof STATUS_CONFIG] ?? STATUS_CONFIG.open).cssVar})`,
+                backgroundColor: `var(${(STATUS_CONFIG[post.status as keyof typeof STATUS_CONFIG] ?? STATUS_CONFIG.open).cssVar}-bg)`,
+                borderColor: `var(${(STATUS_CONFIG[post.status as keyof typeof STATUS_CONFIG] ?? STATUS_CONFIG.open).cssVar}-border)`,
+              }"
+            >{{ $t(statusLabelKey(post.status)) }}</span>
+
+            <DropdownMenu v-if="isOrgManager && !isMerged">
+              <DropdownMenuTrigger as-child>
+                <button class="inline-flex max-w-[15rem] items-center gap-1.5 rounded-full border border-border/75 bg-muted px-2.5 py-1 text-[11px] font-medium text-muted-foreground transition-colors hover:text-foreground">
+                  <Icon name="lucide:folder" size="12" class="shrink-0" /><span class="truncate">{{ boardName ?? $t('post.detail.none') }}</span><Icon name="lucide:chevron-down" size="12" class="shrink-0" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" class="min-w-[200px]">
+                <DropdownMenuItem class="text-xs font-medium gap-2" :class="!post.boardId ? 'font-bold' : ''" @click="handleBoardChange(null)"><span class="w-4 shrink-0 flex items-center justify-center"><Icon v-if="!post.boardId" name="lucide:check" size="12" /></span>{{ $t('post.detail.none') }}</DropdownMenuItem>
+                <DropdownMenuItem v-for="board in boards" :key="board.id" class="text-xs font-medium gap-2" :class="post.boardId === board.id ? 'font-bold' : ''" @click="handleBoardChange(board.id)"><span class="w-4 shrink-0 flex items-center justify-center"><Icon v-if="post.boardId === board.id" name="lucide:check" size="12" /></span>{{ board.name }}</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <span v-else class="inline-flex max-w-[15rem] items-center gap-1.5 rounded-full border border-border/75 bg-muted px-2.5 py-1 text-[11px] font-medium text-muted-foreground"><Icon name="lucide:folder" size="12" class="shrink-0" /><span class="truncate">{{ boardName ?? $t('post.detail.none') }}</span></span>
           </div>
-        </div>
+
+          <StatusNotifyPrompt v-if="notifyStatus" class="mb-4" :actor-name="session?.user?.name" :actor-image="session?.user?.image" @send="sendStatusNotification" @dismiss="notifyStatus = null" />
+
+          <div class="flex items-start gap-3 mb-4">
+            <div class="flex-1 min-w-0">
+              <h2 class="font-heading text-2xl font-bold min-w-0 break-words">{{ post.title }}</h2>
+            </div>
+            <div class="flex items-center gap-2 shrink-0 pt-1">
+              <span class="text-xs font-medium text-muted-foreground flex items-center gap-1.5"><Icon name="lucide:clock" size="14" /> {{ timeAgo(post.createdAt) }}</span>
+              <DropdownMenu v-if="isOrgManager && !isMerged">
+                <DropdownMenuTrigger as-child><button class="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-colors" :title="$t('post.merge.tooltip')"><Icon name="lucide:git-merge" size="18" /></button></DropdownMenuTrigger>
+                <DropdownMenuContent align="end" class="min-w-[200px]"><DropdownMenuItem class="text-xs font-bold gap-2" @click="openMergeDialog('bring')"><Icon name="lucide:arrow-down-left" size="14" /> {{ $t('post.merge.toThis') }}</DropdownMenuItem><DropdownMenuItem class="text-xs font-bold gap-2" @click="openMergeDialog('push')"><Icon name="lucide:arrow-up-right" size="14" /> {{ $t('post.merge.thisInto') }}</DropdownMenuItem></DropdownMenuContent>
+              </DropdownMenu>
+              <DropdownMenu v-if="showPostMenu">
+                <DropdownMenuTrigger as-child><button class="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-colors"><Icon name="lucide:more-horizontal" size="18" /></button></DropdownMenuTrigger>
+                <DropdownMenuContent align="end" class="min-w-[120px]"><DropdownMenuItem v-if="canEditPost" class="text-xs font-bold gap-2" @click="startEditPost"><Icon name="lucide:pencil" size="14" /> {{ $t('common.edit') }}</DropdownMenuItem><DropdownMenuItem v-if="canDeletePost" class="text-xs font-bold gap-2 text-destructive" @click="handleDeletePost"><Icon name="lucide:trash-2" size="14" /> {{ $t('common.delete') }}</DropdownMenuItem></DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          </div>
+          <PostContent v-if="post.content" :content="post.content" />
+          <div v-else class="h-20 bg-muted rounded animate-pulse" />
+
+          <div class="mt-6 flex flex-col gap-4 border-t border-border/70 pt-4 sm:flex-row sm:items-center sm:justify-between">
+            <div class="flex min-w-0 items-center gap-3">
+              <img v-if="post.author?.image" :src="post.author.image" :alt="post.author.name" class="size-8 rounded-full object-cover shrink-0" referrerpolicy="no-referrer">
+              <div v-else class="size-8 rounded-full bg-foreground/10 flex items-center justify-center text-foreground font-bold text-xs shrink-0">{{ initials(post.author?.name) }}</div>
+              <div class="min-w-0">
+                <p class="text-sm font-semibold truncate">{{ post.author?.name ?? $t('common.anonymous') }}</p>
+                <div v-if="post.author?.email" class="flex items-center gap-1"><a :href="`mailto:${post.author.email}`" class="min-w-0 text-[11px] text-muted-foreground hover:text-primary truncate transition-colors" :title="post.author.email">{{ post.author.email }}</a><button class="size-5 shrink-0 rounded flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-colors" :title="$t('post.detail.copyEmail')" @click="handleCopyEmail"><Icon name="lucide:copy" size="12" /></button></div>
+              </div>
+            </div>
+            <div class="flex shrink-0 items-center gap-2 sm:ml-auto">
+              <button class="inline-flex size-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground" :aria-label="$t('post.detail.shareRequest')" :title="$t('post.detail.shareRequest')" @click="handleShare"><Icon name="lucide:share-2" size="17" /></button>
+              <button v-if="!isMerged" type="button" class="upvote-btn" :class="post.hasVoted ? 'upvote-btn--voted' : 'upvote-btn--idle'" :aria-label="post.hasVoted ? $t('board.removeUpvote', { title: post.title }) : $t('board.upvote', { title: post.title })" :aria-pressed="post.hasVoted" @click="handleVote"><span class="upvote-btn__triangle" aria-hidden="true" /><span>{{ $t('board.upvote') }}</span><span class="upvote-btn__count">{{ post.voteCount }}</span></button>
+            </div>
+          </div>
+        </template>
       </div>
 
       <!-- Discussion -->
@@ -481,87 +511,8 @@ async function handleShare() {
 
     <!-- Right sidebar -->
     <aside class="w-full md:w-[320px] shrink-0 self-start space-y-4">
-      <div class="bg-card border border-border rounded-lg p-6 shadow-sm space-y-4">
-        <div>
-          <h4 class="font-heading text-[11px] font-bold text-muted-foreground uppercase tracking-wider mb-2">{{ $t('post.detail.board') }}</h4>
-          <DropdownMenu v-if="isOrgManager && !isMerged">
-            <DropdownMenuTrigger as-child>
-              <button class="flex items-center gap-3 hover:bg-secondary/50 p-2 -ml-2 rounded-md transition-colors">
-                <Icon name="lucide:folder" size="16" class="text-primary shrink-0" /><span class="font-bold text-sm">{{ boardName ?? $t('post.detail.none') }}</span><Icon name="lucide:chevron-down" size="14" class="text-muted-foreground shrink-0" />
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" class="min-w-[200px]">
-              <DropdownMenuItem class="text-xs font-medium gap-2" :class="!post.boardId ? 'font-bold' : ''" @click="handleBoardChange(null)">
-                <span class="w-4 shrink-0 flex items-center justify-center"><Icon v-if="!post.boardId" name="lucide:check" size="12" /></span> {{ $t('post.detail.none') }}
-              </DropdownMenuItem>
-              <DropdownMenuItem v-for="board in boards" :key="board.id" class="text-xs font-medium gap-2" :class="post.boardId === board.id ? 'font-bold' : ''" @click="handleBoardChange(board.id)">
-                <span class="w-4 shrink-0 flex items-center justify-center"><Icon v-if="post.boardId === board.id" name="lucide:check" size="12" /></span> {{ board.name }}
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-          <div v-else class="flex items-center gap-3 p-2 -ml-2"><Icon name="lucide:folder" size="16" class="text-primary shrink-0" /><span class="font-bold text-sm">{{ boardName ?? $t('post.detail.none') }}</span></div>
-        </div>
-        <!-- Status: hidden for merged posts -->
-        <div v-if="!isMerged">
-          <h4 class="font-heading text-[11px] font-bold text-muted-foreground uppercase tracking-wider mb-2">{{ $t('post.detail.status') }}</h4>
-          <DropdownMenu v-if="isOrgManager">
-            <DropdownMenuTrigger as-child>
-              <button class="flex items-center gap-3 hover:bg-secondary/50 p-2 -ml-2 rounded-md transition-colors">
-                <div class="w-3 h-3 rounded-full" :style="{ backgroundColor: `var(${(STATUS_CONFIG[post.status as keyof typeof STATUS_CONFIG] ?? STATUS_CONFIG.open).cssVar})` }" />
-                <span class="font-bold text-sm">{{ $t(statusLabelKey(post.status)) }}</span><Icon name="lucide:chevron-down" size="14" class="text-muted-foreground" />
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" class="min-w-[160px]">
-              <DropdownMenuItem v-for="opt in STATUS_OPTIONS" :key="opt.value" class="text-xs font-medium gap-2" :class="post.status === opt.value ? 'font-bold' : ''" @click="handleStatusChange(opt.value)">
-                <span class="w-4 shrink-0 flex items-center justify-center"><Icon v-if="post.status === opt.value" name="lucide:check" size="12" /></span>
-                <div class="w-2.5 h-2.5 rounded-full" :style="{ backgroundColor: `var(${opt.cssVar})` }"></div> {{ $t(statusLabelKey(opt.value)) }}
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-          <div v-else class="flex items-center gap-3">
-            <div class="w-3 h-3 rounded-full" :style="{ backgroundColor: `var(${(STATUS_CONFIG[post.status as keyof typeof STATUS_CONFIG] ?? STATUS_CONFIG.open).cssVar})` }" />
-            <span class="font-bold text-sm">{{ $t(statusLabelKey(post.status)) }}</span>
-          </div>
-          <StatusNotifyPrompt
-            v-if="notifyStatus"
-            class="mt-2"
-            :actor-name="session?.user?.name"
-            :actor-image="session?.user?.image"
-            @send="sendStatusNotification"
-            @dismiss="notifyStatus = null"
-          />
-        </div>
-        <div>
-          <h4 class="font-heading text-[11px] font-bold text-muted-foreground uppercase tracking-wider mb-3">{{ $t('post.detail.author') }}</h4>
-          <div class="flex items-center gap-3">
-            <img v-if="post.author?.image" :src="post.author.image" :alt="post.author.name" class="w-8 h-8 rounded-full object-cover shrink-0" referrerpolicy="no-referrer">
-            <div v-else class="w-8 h-8 rounded-full bg-foreground/10 flex items-center justify-center text-foreground font-bold text-xs shrink-0">{{ initials(post.author?.name) }}</div>
-            <div class="flex-1 min-w-0">
-              <p class="text-sm font-bold truncate">{{ post.author?.name ?? $t('common.anonymous') }}</p>
-              <!-- No role check here on purpose: the API only ships email to staff. -->
-              <div v-if="post.author?.email" class="flex items-center gap-1">
-                <a
-                  :href="`mailto:${post.author.email}`"
-                  class="min-w-0 text-[11px] text-muted-foreground hover:text-primary truncate transition-colors"
-                  :title="post.author.email"
-                >{{ post.author.email }}</a>
-                <button
-                  class="w-5 h-5 shrink-0 rounded flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-colors"
-                  :title="$t('post.detail.copyEmail')"
-                  @click="handleCopyEmail"
-                >
-                  <Icon name="lucide:copy" size="12" />
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-        <!-- Admins never receive post-thread email, so the card would lie to them. -->
-        <PostSubscribeCard v-if="post.id && isLoggedIn && !isOrgManager && !isMerged" :post-id="post.id" :subscribed="post.subscribed ?? false" @update:subscribed="post.subscribed = $event" />
-        <div class="pt-2 flex flex-col gap-2">
-          <Button variant="outline" class="text-primary" :disabled="isMerged" :class="isMerged ? 'opacity-50 cursor-not-allowed' : ''" @click="handleShare"><Icon name="lucide:share-2" size="18" /> {{ $t('post.detail.shareRequest') }}</Button>
-        </div>
-      </div>
+      <!-- Admins never receive post-thread email, so the card would lie to them. -->
+      <PostSubscribeCard v-if="post.id && isLoggedIn && !isOrgManager && !isMerged" :post-id="post.id" :subscribed="post.subscribed ?? false" @update:subscribed="post.subscribed = $event" />
       <SimilarPostsPanel v-if="post.id && !isMerged" :post-id="post.id" :is-admin="isOrgManager" @merge="handleSimilarMerge" />
     </aside>
 
@@ -573,7 +524,132 @@ async function handleShare() {
 
 <style scoped>
 .upvote-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  overflow: hidden;
+  border: 1px solid color-mix(in oklab, var(--border) 88%, transparent);
+  border-radius: 9999px;
+  padding: 0.25rem 1rem;
+  color: var(--muted-foreground);
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1;
   cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 2px 4px rgb(44 38 37 / 0.02), inset 0 1px 0 rgb(255 255 255 / 0.9);
+  transition: border-color 300ms cubic-bezier(0.4, 0, 0.2, 1), background-color 300ms cubic-bezier(0.4, 0, 0.2, 1), color 200ms ease, box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1), transform 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.upvote-btn--idle {
+  --upvote-surface: color-mix(in oklab, var(--foreground) 2%, var(--card));
+  background: linear-gradient(180deg, rgb(255 255 255 / 0.82) 0%, color-mix(in oklab, var(--foreground) 2%, var(--card)) 100%);
+}
+
+.upvote-btn--idle:hover {
+  --upvote-surface: color-mix(in oklab, var(--foreground) 4%, var(--card));
+  border-color: color-mix(in oklab, var(--foreground) 18%, var(--border));
+  background: linear-gradient(180deg, rgb(255 255 255 / 0.92) 0%, color-mix(in oklab, var(--foreground) 4%, var(--card)) 100%);
+  color: var(--foreground);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px -4px rgb(44 38 37 / 0.08), 0 4px 8px -2px rgb(44 38 37 / 0.03), inset 0 1px 0 rgb(255 255 255 / 0.95);
+}
+
+.upvote-btn--voted {
+  --upvote-surface: var(--primary);
+  border-color: color-mix(in oklab, var(--primary) 30%, var(--border));
+  background: linear-gradient(180deg, color-mix(in oklab, var(--primary) 9%, var(--card)) 0%, color-mix(in oklab, var(--primary) 16%, var(--card)) 100%);
+  color: var(--primary);
+  animation: vote-pop 220ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.upvote-btn--voted:hover {
+  border-color: color-mix(in oklab, var(--primary) 48%, var(--border));
+  background: linear-gradient(180deg, color-mix(in oklab, var(--primary) 15%, var(--card)) 0%, color-mix(in oklab, var(--primary) 22%, var(--card)) 100%);
+  transform: translateY(-2px);
+}
+
+.upvote-btn__triangle {
+  position: relative;
+  display: inline-block;
+  width: 0.75rem;
+  height: 0.6875rem;
+  flex: 0 0 auto;
+  transition: transform 300ms cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.upvote-btn__triangle::before,
+.upvote-btn__triangle::after {
+  position: absolute;
+  content: '';
+  clip-path: polygon(50% 3%, 97% 94%, 3% 94%);
+}
+
+.upvote-btn__triangle::before {
+  inset: 0;
+  background: currentColor;
+}
+
+.upvote-btn__triangle::after {
+  top: 0.20rem;
+  right: 0.16rem;
+  bottom: 0.13rem;
+  left: 0.16rem;
+  background: var(--upvote-surface, var(--card));
+}
+
+.upvote-btn--voted .upvote-btn__triangle::after {
+  display: none;
+}
+
+.upvote-btn:hover .upvote-btn__triangle {
+  transform: translateY(-2px);
+}
+
+.upvote-btn__count {
+  display: inline-flex;
+  min-width: 1.25rem;
+  align-items: center;
+  height: 1.25rem;
+  border-left: 1px solid color-mix(in oklab, currentColor 20%, transparent);
+  padding-left: 0.5rem;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.upvote-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 2px rgb(44 38 37 / 0.06);
+}
+
+.upvote-btn:active .upvote-btn__triangle {
+  transform: translateY(0) scale(0.9);
+}
+
+.upvote-btn:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+@media (max-width: 767px) {
+  .detail-vote-control {
+    display: flex;
+    justify-content: flex-start;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .upvote-btn {
+    transition: none;
+  }
+
+  .upvote-btn:active {
+    transform: none;
+  }
+}
+
+@keyframes vote-pop {
+  0% { transform: scale(0.96); }
+  60% { transform: scale(1.04); }
+  100% { transform: scale(1); }
 }
 </style>

@@ -70,7 +70,7 @@ defineExpose({ reset })
 <template>
   <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2">
     <Transition name="fl-left" mode="out-in" @after-enter="onSearchRevealed">
-      <h2 v-if="!searchOpenDesktop" class="font-heading text-2xl font-bold">
+      <h2 v-if="!searchOpenDesktop" class="font-heading text-xl font-semibold leading-tight tracking-[-0.03em] sm:text-2xl md:text-[28px]">
         {{ sortBy === 'top' ? $t('board.topRequests') : $t('board.recentRequests') }}
       </h2>
       <div v-else class="fl-search">
@@ -98,7 +98,7 @@ defineExpose({ reset })
     <div ref="controlsRow" class="fl-rightbar flex items-center relative">
       <Transition name="fl-controls">
         <div v-if="!searchOpen" class="flex items-center gap-3">
-          <div class="flex bg-border/50 p-1 rounded-lg">
+          <div class="flex rounded-lg bg-secondary/55 p-1">
             <button
               class="px-4 py-1.5 rounded-[12px] text-sm font-medium transition-colors"
               :class="sortBy === 'top'

@@ -40,10 +40,10 @@ function collapseDefaultForIndex(index: number) {
 
 <template>
   <div class="flex-1 flex flex-col min-w-0 max-w-3xl mx-auto w-full min-h-0">
-    <div class="pb-3 sm:pb-4 md:pb-8">
+    <div class="pb-5 sm:pb-6 md:pb-7">
       <div class="flex flex-col gap-1.5 sm:gap-2 md:flex-row md:items-baseline md:justify-between md:gap-4">
         <div class="min-w-0">
-          <h1 class="font-heading text-xl sm:text-2xl md:text-3xl font-bold tracking-tight">
+          <h1 class="font-heading text-xl font-semibold leading-tight tracking-[-0.03em] sm:text-2xl md:text-[28px]">
             {{ $t('changelog.title') }}
           </h1>
           <p class="text-xs sm:text-sm text-muted-foreground mt-1 max-w-xl leading-relaxed">

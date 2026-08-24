@@ -449,23 +449,23 @@ function removeItem(postId: string) {
 </script>
 
 <template>
-  <div class="flex gap-6 h-full">
+  <div class="roadmap-lanes flex h-full min-w-max md:min-w-0">
     <div
       v-for="col in columns"
       :key="col.id"
       :ref="(el) => setColumnRef(col.id, el)"
       :data-status="col.id"
-      class="flex-1 flex flex-col min-w-[260px] md:min-w-0 kanban-column transition-all duration-200"
+      class="flex-1 flex flex-col min-w-[260px] md:min-w-0 kanban-column transition-colors duration-200"
       :class="{
         'ring-2 ring-primary/50': dropTargetStatus === col.id,
       }"
     >
       <!-- Column header -->
-      <div class="flex items-center justify-between mb-4 px-2">
+      <div class="flex items-center justify-between mb-5">
         <div class="flex items-center gap-2">
-          <span class="w-2.5 h-2.5 rounded-full" :style="{ backgroundColor: `var(${col.cssVar})` }" />
-          <h3 class="font-heading text-sm font-bold uppercase tracking-wider">{{ col.label }}</h3>
-          <span class="ml-1 px-2 py-0.5 rounded-full bg-card/60 text-[10px] font-bold text-muted-foreground border border-border/40">
+          <span class="h-2.5 w-2.5 rounded-full" :style="{ backgroundColor: `var(${col.cssVar})` }" />
+          <h3 class="font-heading text-[15px] font-semibold tracking-tight">{{ col.label }}</h3>
+          <span class="ml-1 text-xs tabular-nums text-muted-foreground">
             {{ col.total }}
           </span>
         </div>
@@ -487,7 +487,7 @@ function removeItem(postId: string) {
         <TransitionGroup
           name="kanban-card"
           tag="div"
-          class="space-y-4"
+          class="space-y-3"
         >
           <div
             v-for="entry in buildRenderList(col.id)"
@@ -527,7 +527,7 @@ function removeItem(postId: string) {
         </TransitionGroup>
 
         <!-- Load more -->
-        <div v-if="col.nextCursor" class="flex justify-center pt-2 pb-1 mt-4">
+        <div v-if="col.nextCursor" class="flex justify-center pt-3 pb-1 mt-3">
           <button
             class="text-xs font-bold text-muted-foreground hover:text-primary transition-colors"
             :disabled="loadingMore === col.id"
@@ -541,13 +541,12 @@ function removeItem(postId: string) {
       <!-- Empty state -->
       <div
         v-if="!col.items.length && !draggingPostId"
-        class="flex-1 flex flex-col items-center justify-center border-2 border-dashed border-border/60 rounded-xl p-8 text-center bg-card/30"
+        class="roadmap-empty pt-6 text-left"
       >
-        <Icon name="lucide:puzzle" size="48" class="text-border mb-3" />
-        <p class="text-xs font-medium text-muted-foreground">{{ $t('roadmap.emptyColumn', { status: col.label.toLowerCase() }) }}</p>
+        <p class="text-sm text-muted-foreground">{{ $t('roadmap.emptyColumn', { status: col.label.toLowerCase() }) }}</p>
         <button
           v-if="editable"
-          class="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-lg text-primary bg-primary/5 hover:bg-primary/10 transition-colors text-xs font-bold border border-primary/20"
+          class="mt-3 inline-flex items-center gap-1.5 text-primary hover:text-primary/75 transition-colors text-xs font-semibold"
           @click="emit('add', col.id)"
         >
           <Icon name="lucide:plus-circle" size="16" />
@@ -560,12 +559,21 @@ function removeItem(postId: string) {
 
 <style scoped>
 .kanban-column {
-  /* Subtle panel that derives from the foreground so it reads as a recessed
-     column in both light (faint dark wash) and dark (faint light wash) modes —
-     a fixed light beige stayed light against the dark surface. */
-  background-color: color-mix(in oklab, var(--foreground) 5%, transparent);
-  border-radius: 16px;
-  padding: 12px;
+  padding: 0 1.25rem;
+  border-left: 1px solid color-mix(in oklab, var(--border) 90%, transparent);
+}
+
+.kanban-column:first-child {
+  border-left: 0;
+  padding-left: 0;
+}
+
+.kanban-column:last-child {
+  padding-right: 0;
+}
+
+.kanban-column:has(.ring-2) {
+  background: color-mix(in oklab, var(--primary) 5%, transparent);
 }
 
 .kanban-scroll {

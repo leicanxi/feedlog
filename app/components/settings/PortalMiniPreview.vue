@@ -124,12 +124,6 @@ const posts = [
                   <span class="text-xs px-2 py-0.5 rounded-full font-bold" :class="b.active ? 'bg-card text-primary' : 'bg-background'">{{ b.count }}</span>
                 </div>
               </nav>
-              <div class="mt-8">
-                <span class="inline-flex items-center gap-1.5 px-4 text-[11px] text-muted-foreground">
-                  <Icon name="lucide:zap" size="12" class="opacity-70" />
-                  Powered by <span class="font-medium">FeedLog</span>
-                </span>
-              </div>
             </aside>
 
             <section class="flex-1 flex flex-col gap-6 min-w-0">

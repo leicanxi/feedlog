@@ -374,9 +374,6 @@ onUnmounted(() => {
       />
     </KeepAlive>
 
-    <p v-if="status !== 'loading'" class="py-1.5 bg-card text-center text-[10.5px] text-muted-foreground shrink-0">
-      {{ t('board.poweredBy') }}FeedLog
-    </p>
   </div>
 </template>
 

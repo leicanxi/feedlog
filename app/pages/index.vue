@@ -248,20 +248,20 @@ async function handleVote(post: PostListItem) {
   <h1 class="sr-only">{{ portalOrg.name }} Feedback</h1>
 
   <!-- Sidebar: Boards -->
-  <aside class="w-full md:w-[280px] shrink-0 space-y-8">
-    <div class="space-y-4">
-      <div class="font-heading text-lg font-bold mb-4 md:mb-4 hidden md:block">{{ $t('board.boards') }}</div>
+  <aside class="w-full shrink-0 space-y-8 md:w-[272px] md:border-r md:border-border/75 md:pr-8">
+    <div class="space-y-3">
+      <div class="mb-4 hidden font-heading text-[13px] font-semibold uppercase tracking-[0.04em] text-muted-foreground md:block">{{ $t('board.boards') }}</div>
 
       <!-- Mobile: horizontal scrollable pills with fade edges -->
       <div class="md:hidden relative">
-        <div class="font-heading text-sm font-bold text-muted-foreground uppercase tracking-wider mb-2">{{ $t('board.boards') }}</div>
+        <div class="font-heading text-[13px] font-semibold text-muted-foreground uppercase tracking-[0.04em] mb-2">{{ $t('board.boards') }}</div>
         <div class="relative -mx-4">
           <nav class="flex gap-2 overflow-x-auto px-4" style="-ms-overflow-style: none; scrollbar-width: none;">
         <button
-          class="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold transition-colors border"
+          class="flex shrink-0 items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-sm font-semibold text-muted-foreground transition-colors"
           :class="!activeBoardId
-            ? 'bg-primary text-primary-foreground border-primary'
-            : 'bg-card text-muted-foreground border-border hover:border-primary hover:text-foreground'"
+            ? 'border-foreground/15 bg-secondary text-foreground'
+            : 'hover:border-foreground/20 hover:text-foreground'"
           @click="selectBoard(null)"
         >
           {{ $t('board.allFeedback') }}
@@ -270,10 +270,10 @@ async function handleVote(post: PostListItem) {
         <button
           v-for="b in boards"
           :key="b.id"
-          class="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold transition-colors border"
+          class="flex shrink-0 items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-sm font-semibold text-muted-foreground transition-colors"
           :class="activeBoardId === b.id
-            ? 'bg-primary text-primary-foreground border-primary'
-            : 'bg-card text-muted-foreground border-border hover:border-primary hover:text-foreground'"
+            ? 'border-foreground/15 bg-secondary text-foreground'
+            : 'hover:border-foreground/20 hover:text-foreground'"
           @click="selectBoard(b.id)"
         >
           {{ b.name }}
@@ -287,23 +287,17 @@ async function handleVote(post: PostListItem) {
       </div>
 
       <!-- Desktop: vertical list -->
-      <nav class="hidden md:flex flex-col gap-2">
+      <nav class="hidden md:flex md:flex-col">
         <!-- All Feedback -->
         <button
-          class="flex items-center justify-between px-4 py-3 rounded-lg font-medium transition-colors w-full text-left"
+          class="board-nav-item"
           :class="!activeBoardId
-            ? 'bg-secondary text-primary'
-            : 'text-muted-foreground hover:bg-card hover:text-foreground'"
+            ? 'is-active'
+            : ''"
           @click="selectBoard(null)"
         >
-          <div class="flex items-center gap-3">
-            <Icon name="lucide:layout-grid" size="18" />
-            <span>{{ $t('board.allFeedback') }}</span>
-          </div>
-          <span
-            class="text-xs px-2 py-0.5 rounded-full font-bold"
-            :class="!activeBoardId ? 'bg-card text-primary shadow-sm' : 'bg-background'"
-          >
+          <span>{{ $t('board.allFeedback') }}</span>
+          <span class="text-xs font-medium tabular-nums text-muted-foreground">
             {{ totalPostCount }}
           </span>
         </button>
@@ -312,42 +306,24 @@ async function handleVote(post: PostListItem) {
         <button
           v-for="b in boards"
           :key="b.id"
-          class="flex items-center justify-between px-4 py-3 rounded-lg font-medium transition-colors w-full text-left"
+          class="board-nav-item"
           :class="activeBoardId === b.id
-            ? 'bg-secondary text-primary'
-            : 'text-muted-foreground hover:bg-card hover:text-foreground'"
+            ? 'is-active'
+            : ''"
           @click="selectBoard(b.id)"
         >
-          <div class="flex items-center gap-3">
-            <Icon name="lucide:folder" size="18" />
-            <span>{{ b.name }}</span>
-          </div>
-          <span
-            class="text-xs px-2 py-0.5 rounded-full font-bold"
-            :class="activeBoardId === b.id ? 'bg-card text-primary shadow-sm' : 'bg-background'"
-          >
+          <span class="truncate">{{ b.name }}</span>
+          <span class="text-xs font-medium tabular-nums text-muted-foreground">
             {{ b.postCount ?? 0 }}
           </span>
         </button>
       </nav>
 
-      <!-- Keep "Powered by FeedLog" as one inline run so the flex gap only spaces
-           the icon (a gap between the text node and the brand span would read as a
-           stray space). Quiet prefix + emphasized brand give the badge hierarchy. -->
-      <a
-        href="https://feedlog.ai"
-        target="_blank"
-        rel="noreferrer"
-        class="group hidden md:inline-flex items-center gap-1.5 px-4 pt-2 text-xs text-muted-foreground/70 hover:text-foreground transition-colors"
-      >
-        <Icon name="lucide:zap" size="12" class="opacity-60 transition-opacity group-hover:opacity-100" />
-        <span>{{ $t('board.poweredBy') }}<span class="font-semibold text-foreground/75 transition-colors group-hover:text-foreground">FeedLog</span></span>
-      </a>
     </div>
   </aside>
 
   <!-- Main content: Feedback area -->
-  <section class="flex-1 min-w-0 flex flex-col gap-6">
+  <section class="-mt-4 md:mt-0 flex-1 min-w-0 flex flex-col gap-6">
     <PortalWelcomeBlock
       v-if="hasWelcome"
       :title="branding.welcomeTitle"
@@ -392,72 +368,64 @@ async function handleVote(post: PostListItem) {
       <article
         v-for="p in posts"
         :key="p.id"
-        class="feedback-card flex items-stretch gap-4 bg-card border border-border rounded-lg p-4 cursor-pointer"
+        class="feedback-card group relative overflow-hidden rounded-2xl border border-border bg-card p-5 cursor-pointer"
         @click="openPostDetail(p)"
       >
-        <!-- Upvote button -->
-        <button
-          class="upvote-btn w-[56px] h-[64px] shrink-0 rounded-md flex flex-col items-center justify-center gap-1 border focus:outline-none"
-          :class="p.hasVoted
-            ? 'bg-primary text-primary-foreground border-primary shadow-sm'
-            : 'bg-background text-foreground border-border hover:border-primary hover:text-primary transition-colors'"
-          @click.stop="handleVote(p)"
-        >
-          <Icon name="lucide:chevron-up" size="24" />
-          <span class="font-heading font-bold text-[15px] leading-none">{{ p.voteCount }}</span>
-        </button>
-
-        <!-- Card content -->
-        <div class="flex-1 flex flex-col justify-center min-w-0 py-1">
-          <!-- Status badge + Board -->
-          <div class="flex items-center gap-2 mb-1">
-            <span
-              v-if="p.status && p.status !== 'open' && STATUS_CONFIG[p.status as keyof typeof STATUS_CONFIG]"
-              class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border"
-              :style="{
-                color: `var(${STATUS_CONFIG[p.status as keyof typeof STATUS_CONFIG].cssVar})`,
-                backgroundColor: `var(${STATUS_CONFIG[p.status as keyof typeof STATUS_CONFIG].cssVar}-bg)`,
-                borderColor: `var(${STATUS_CONFIG[p.status as keyof typeof STATUS_CONFIG].cssVar}-border)`,
-              }"
-            >
-              {{ $t(statusLabelKey(p.status)) }}
-            </span>
-            <span v-if="p.boardId && boardMap.get(p.boardId)" class="text-xs font-medium text-muted-foreground">
-              {{ p.status && p.status !== 'open' ? '•' : '' }} {{ boardMap.get(p.boardId) }}
-            </span>
+        <div class="feedback-card__content">
+          <!-- FeedLog issue-card header: classification left, timestamp right. -->
+          <div class="flex items-start justify-between gap-3">
+            <div class="flex min-w-0 flex-wrap items-center gap-2">
+              <span
+                v-if="p.status && p.status !== 'open' && STATUS_CONFIG[p.status as keyof typeof STATUS_CONFIG]"
+                class="inline-flex items-center rounded-full border px-2.5 py-1 text-[11px] font-semibold leading-none"
+                :style="{
+                  color: `var(${STATUS_CONFIG[p.status as keyof typeof STATUS_CONFIG].cssVar})`,
+                  backgroundColor: `var(${STATUS_CONFIG[p.status as keyof typeof STATUS_CONFIG].cssVar}-bg)`,
+                  borderColor: `var(${STATUS_CONFIG[p.status as keyof typeof STATUS_CONFIG].cssVar}-border)`,
+                }"
+              >
+                {{ $t(statusLabelKey(p.status)) }}
+              </span>
+              <span v-if="p.boardId && boardMap.get(p.boardId)" class="issue-category">
+                <span class="truncate">{{ boardMap.get(p.boardId) }}</span>
+              </span>
+            </div>
+            <span class="shrink-0 pt-0.5 text-xs font-medium text-muted-foreground">{{ timeAgo(p.createdAt) }}</span>
           </div>
 
-          <!-- Title -->
-          <div class="flex items-center gap-2 mb-1.5">
-            <h3 class="font-heading text-lg font-bold leading-tight truncate">
+          <div class="min-w-0">
+            <h3 class="feedback-card__title line-clamp-2">
               {{ p.title }}
             </h3>
-            <!-- <span v-if="p.mergedCount > 0" class="inline-flex items-center gap-0.5 text-[10px] font-bold text-muted-foreground bg-secondary px-1.5 py-0.5 rounded shrink-0">
-              <Icon name="lucide:git-merge" size="10" /> {{ p.mergedCount }}
-            </span> -->
+            <div class="feedback-card__title-rule" aria-hidden="true" />
           </div>
 
-          <!-- Excerpt -->
-          <p class="text-sm text-muted-foreground line-clamp-2 break-all">
-            {{ p.excerpt }}
-          </p>
+          <!-- Keep FeedLog's repo-name treatment, now carrying the original comment count. -->
+          <div class="feedback-card__footer">
+            <div class="flex min-w-0 items-center gap-2.5">
+              <span class="repo-name">
+                <Icon name="lucide:message-square" size="13" aria-hidden="true" />
+                <span>{{ $t('board.comments', { n: p.commentCount }) }}</span>
+              </span>
+              <div class="feedback-author">
+                <img v-if="p.author?.image" :src="p.author.image" :alt="p.author.name" class="size-5 rounded-full object-cover shrink-0" referrerpolicy="no-referrer">
+                <span v-else class="feedback-author__fallback">{{ initials(p.author?.name) }}</span>
+                <span class="truncate">{{ p.author?.name }}</span>
+              </div>
+            </div>
 
-          <!-- Bottom meta -->
-          <div class="flex items-center gap-4 mt-3 text-xs text-muted-foreground font-medium">
-            <div class="flex items-center gap-1.5">
-              <Icon name="lucide:message-square" size="14" />
-              <span>{{ $t('board.comments', { n: p.commentCount }) }}</span>
-            </div>
-            <div class="flex items-center gap-2">
-              <img v-if="p.author?.image" :src="p.author.image" :alt="p.author.name" class="w-5 h-5 rounded-full object-cover shrink-0" referrerpolicy="no-referrer">
-              <div v-else class="w-5 h-5 rounded-full bg-foreground/10 flex items-center justify-center text-foreground font-bold text-[9px] shrink-0">
-                {{ initials(p.author?.name) }}
-              </div>
-              <div class="flex items-center gap-1.5">
-                <Icon name="lucide:clock" size="14" />
-                <span>{{ timeAgo(p.createdAt) }}</span>
-              </div>
-            </div>
+            <button
+              type="button"
+              class="upvote-btn"
+              :class="p.hasVoted ? 'upvote-btn--voted' : 'upvote-btn--idle'"
+              :aria-label="p.hasVoted ? $t('board.removeUpvote', { title: p.title }) : $t('board.upvote', { title: p.title })"
+              :aria-pressed="p.hasVoted"
+              @click.stop="handleVote(p)"
+            >
+              <span class="upvote-btn__triangle" aria-hidden="true" />
+              <span class="upvote-btn__label">{{ $t('board.upvote') }}</span>
+              <span class="upvote-btn__count">{{ p.voteCount }}</span>
+            </button>
           </div>
         </div>
       </article>
@@ -491,15 +459,295 @@ async function handleVote(post: PostListItem) {
 
 <style scoped>
 .upvote-btn {
-  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 0.5rem;
+  overflow: hidden;
+  border: 1px solid color-mix(in oklab, var(--border) 88%, transparent);
+  border-radius: 9999px;
+  padding: 0.25rem 1rem;
+  color: var(--muted-foreground);
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1;
+  box-shadow: 0 2px 4px rgb(44 38 37 / 0.02), inset 0 1px 0 rgb(255 255 255 / 0.9);
+  transition: border-color 300ms cubic-bezier(0.4, 0, 0.2, 1), background-color 300ms cubic-bezier(0.4, 0, 0.2, 1), color 200ms ease, box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1), transform 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.board-nav-item {
+  position: relative;
+  display: flex;
+  width: 100%;
+  min-height: 2.875rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  border-bottom: 1px solid color-mix(in oklab, var(--border) 72%, transparent);
+  color: var(--muted-foreground);
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-align: left;
+  transition: color 180ms ease;
+}
+
+.board-nav-item::before {
+  position: absolute;
+  top: 0.625rem;
+  bottom: 0.625rem;
+  left: -0.625rem;
+  width: 2px;
+  content: '';
+  transform: scaleY(0);
+  background: var(--foreground);
+  transition: transform 180ms ease;
+}
+
+.board-nav-item:hover,
+.board-nav-item.is-active {
+  color: var(--foreground);
+}
+
+.board-nav-item.is-active::before {
+  transform: scaleY(1);
 }
 
 .feedback-card {
-  transition: box-shadow 0.2s ease;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.04), 0 4px 12px rgb(0 0 0 / 0.04);
+  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+}
+
+.feedback-card::before {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 3px;
+  content: '';
+  background: linear-gradient(90deg, var(--primary), var(--accent), color-mix(in oklab, var(--primary) 28%, transparent));
+}
+
+.feedback-card__content {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.875rem;
+}
+
+.feedback-card__title {
+  color: var(--card-foreground);
+  font-family: var(--font-heading);
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: -0.02em;
+}
+
+.feedback-card__title-rule {
+  width: 3rem;
+  height: 2px;
+  margin-top: 0.5rem;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--primary), var(--accent));
+}
+
+.feedback-card__footer {
+  display: flex;
+  min-height: 2.25rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: auto;
+}
+
+.issue-category {
+  display: inline-flex;
+  max-width: 12rem;
+  align-items: center;
+  gap: 0.3125rem;
+  color: var(--muted-foreground);
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.repo-name {
+  display: inline-flex;
+  min-width: 6.25rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  flex-shrink: 0;
+  border-radius: 9999px;
+  background: color-mix(in oklab, var(--foreground) 7%, transparent);
+  padding: 0.375rem 0.625rem;
+  color: var(--muted-foreground);
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.feedback-author {
+  display: inline-flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.375rem;
+  color: var(--muted-foreground);
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.feedback-author__fallback {
+  display: inline-flex;
+  width: 1.25rem;
+  height: 1.25rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  background: color-mix(in oklab, var(--foreground) 10%, transparent);
+  color: var(--foreground);
+  font-size: 0.5625rem;
+  font-weight: 700;
+}
+
+.upvote-btn--idle {
+  --upvote-surface: color-mix(in oklab, var(--foreground) 2%, var(--card));
+  background: linear-gradient(180deg, rgb(255 255 255 / 0.82) 0%, color-mix(in oklab, var(--foreground) 2%, var(--card)) 100%);
+}
+
+.upvote-btn--idle:hover {
+  --upvote-surface: color-mix(in oklab, var(--foreground) 4%, var(--card));
+  border-color: color-mix(in oklab, var(--foreground) 18%, var(--border));
+  background: linear-gradient(180deg, rgb(255 255 255 / 0.92) 0%, color-mix(in oklab, var(--foreground) 4%, var(--card)) 100%);
+  color: var(--foreground);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px -4px rgb(44 38 37 / 0.08), 0 4px 8px -2px rgb(44 38 37 / 0.03), inset 0 1px 0 rgb(255 255 255 / 0.95);
+}
+
+.upvote-btn--voted {
+  --upvote-surface: var(--primary);
+  border-color: color-mix(in oklab, var(--primary) 30%, var(--border));
+  background: linear-gradient(180deg, color-mix(in oklab, var(--primary) 9%, var(--card)) 0%, color-mix(in oklab, var(--primary) 16%, var(--card)) 100%);
+  color: var(--primary);
+  animation: vote-pop 220ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.upvote-btn--voted:hover {
+  border-color: color-mix(in oklab, var(--primary) 48%, var(--border));
+  background: linear-gradient(180deg, color-mix(in oklab, var(--primary) 15%, var(--card)) 0%, color-mix(in oklab, var(--primary) 22%, var(--card)) 100%);
+  transform: translateY(-2px);
+}
+
+.upvote-btn__triangle {
+  position: relative;
+  display: inline-block;
+  width: 0.75rem;
+  height: 0.6875rem;
+  flex: 0 0 auto;
+  transition: transform 300ms cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.upvote-btn__triangle::before,
+.upvote-btn__triangle::after {
+  position: absolute;
+  content: '';
+  clip-path: polygon(50% 3%, 97% 94%, 3% 94%);
+}
+
+.upvote-btn__triangle::before {
+  inset: 0;
+  background: currentColor;
+}
+
+.upvote-btn__triangle::after {
+  top: 0.20rem;
+  right: 0.16rem;
+  bottom: 0.13rem;
+  left: 0.16rem;
+  background: var(--upvote-surface, var(--card));
+}
+
+.upvote-btn--voted .upvote-btn__triangle::after {
+  display: none;
+}
+
+.upvote-btn:hover .upvote-btn__triangle {
+  transform: translateY(-2px);
+}
+
+.upvote-btn__count {
+  display: inline-flex;
+  min-width: 1.25rem;
+  align-items: center;
+  height: 1.25rem;
+  border-left: 1px solid color-mix(in oklab, currentColor 20%, transparent);
+  padding-left: 0.5rem;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
 }
 
 .feedback-card:hover {
-  box-shadow: var(--shadow-warm);
+  transform: translateY(-2px);
+  border-color: color-mix(in oklab, var(--primary) 28%, var(--border));
+  box-shadow: 0 2px 4px rgb(0 0 0 / 0.05), 0 8px 20px rgb(0 0 0 / 0.06);
+}
+
+.feedback-card:hover .upvote-btn:not(:focus-visible) {
+  box-shadow: 0 3px 10px color-mix(in oklab, var(--primary) 14%, transparent);
+}
+
+.upvote-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 2px rgb(44 38 37 / 0.06);
+}
+
+.upvote-btn:active .upvote-btn__triangle {
+  transform: translateY(0) scale(0.9);
+}
+
+.upvote-btn:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+@media (max-width: 640px) {
+  .feedback-card__title {
+    font-size: 1.125rem;
+  }
+
+  .upvote-btn__label {
+    display: none;
+  }
+
+  .upvote-btn {
+    min-width: 2.75rem;
+    justify-content: center;
+  }
+
+  .feedback-author > span:last-child {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .feedback-card,
+  .upvote-btn {
+    transition: none;
+  }
+
+  .feedback-card:hover,
+  .upvote-btn:active {
+    transform: none;
+  }
+}
+
+@keyframes vote-pop {
+  0% { transform: scale(0.96); }
+  60% { transform: scale(1.04); }
+  100% { transform: scale(1); }
 }
 
 nav::-webkit-scrollbar {

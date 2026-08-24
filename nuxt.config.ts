@@ -45,6 +45,12 @@ export default defineNuxtConfig({
         { key: 'favicon-png', rel: 'icon', href: '/favicon.png' },
         { key: 'favicon-ico', rel: 'shortcut icon', href: '/favicon.ico' },
         { key: 'favicon-apple', rel: 'apple-touch-icon', href: '/apple-touch-icon.png' },
+        // Source Han Sans / Noto Sans SC.  These runtime stylesheets use the
+        // WebCache NPM mirror, so the production build never reaches Google.
+        { key: 'font-noto-sans-sc-400', rel: 'stylesheet', href: 'https://npm.webcache.cn/@fontsource/noto-sans-sc@5.1.1/400.css' },
+        { key: 'font-noto-sans-sc-500', rel: 'stylesheet', href: 'https://npm.webcache.cn/@fontsource/noto-sans-sc@5.1.1/500.css' },
+        { key: 'font-noto-sans-sc-600', rel: 'stylesheet', href: 'https://npm.webcache.cn/@fontsource/noto-sans-sc@5.1.1/600.css' },
+        { key: 'font-noto-sans-sc-700', rel: 'stylesheet', href: 'https://npm.webcache.cn/@fontsource/noto-sans-sc@5.1.1/700.css' },
       ],
     },
   },
@@ -59,7 +65,6 @@ export default defineNuxtConfig({
 
   modules: [
     '@nuxt/eslint',
-    '@nuxt/fonts',
     '@nuxt/icon',
     '@nuxt/image',
     '@nuxtjs/i18n',
@@ -82,15 +87,6 @@ export default defineNuxtConfig({
   shadcn: {
     prefix: '',
     componentDir: resolver.resolve('./app/components/ui'),
-  },
-  fonts: {
-    families: [
-      {
-        name: 'Inter',
-        provider: 'google',
-        weights: [400, 500, 600, 700],
-      },
-    ],
   },
   i18n: {
     strategy: 'prefix_except_default',

@@ -39,10 +39,10 @@
     "yearsAgo": "{n}y ago"
   },
   "nav": {
-    "feedback": "Feedback",
-    "roadmap": "Roadmap",
+    "feedback": "Wishlist",
+    "roadmap": "Progress",
     "changelog": "Changelog",
-    "board": "Board",
+    "board": "Wish Categories",
     "members": "Members",
     "portal": "Portal",
     "workspace": "Workspace",
@@ -52,7 +52,7 @@
     "widget": "Widget"
   },
   "board": {
-    "boards": "Boards",
+    "boards": "Wish Categories",
     "allFeedback": "All Feedback",
     "topRequests": "Top Requests",
     "recentRequests": "Recent Requests",
@@ -62,18 +62,20 @@
     "searchPlaceholder": "Search feedback…",
     "clearSearch": "Clear search",
     "closeSearch": "Close search",
-    "newRequest": "New Request",
+    "newRequest": "Make a wish",
     "noFeedback": "No feedback yet",
     "noMatches": "No matches for “{query}”",
     "noMatchesHint": "Nobody’s raised this yet — be the first.",
     "comments": "{n} comments",
+    "upvote": "Upvote",
+    "removeUpvote": "Remove upvote for “{title}”",
     "loading": "Loading...",
     "loadMore": "Load More",
     "poweredBy": "Powered by "
   },
   "roadmap": {
-    "title": "Roadmap",
-    "subtitle": "Our current strategic roadmap and development status.",
+    "title": "Progress",
+    "subtitle": "Wishes we're planning, building, and completing.",
     "loading": "Loading...",
     "loadMore": "Load more",
     "emptyColumn": "No items in {status} yet.",
@@ -459,12 +461,12 @@
       "developer": "Developer"
     },
     "roadmap": {
-      "title": "Roadmap",
-      "subtitle": "Feedback by status"
+      "title": "Progress",
+      "subtitle": "Wishes by status"
     },
     "boards": {
-      "title": "Boards",
-      "subtitle": "Organize feedback by category",
+      "title": "Wish Categories",
+      "subtitle": "Organize wishes by category",
       "create": "Create Board",
       "empty": "No boards yet",
       "noResults": "No boards found",

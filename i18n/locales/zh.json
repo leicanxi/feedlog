@@ -39,10 +39,10 @@
     "yearsAgo": "{n} 年前"
   },
   "nav": {
-    "feedback": "反馈",
-    "roadmap": "路线图",
+    "feedback": "愿望清单",
+    "roadmap": "进度",
     "changelog": "更新日志",
-    "board": "看板",
+    "board": "愿望分类",
     "members": "成员",
     "portal": "门户",
     "workspace": "工作区",
@@ -52,7 +52,7 @@
     "widget": "反馈组件"
   },
   "board": {
-    "boards": "看板",
+    "boards": "愿望分类",
     "allFeedback": "全部反馈",
     "topRequests": "热门请求",
     "recentRequests": "最新请求",
@@ -62,18 +62,20 @@
     "searchPlaceholder": "搜索反馈…",
     "clearSearch": "清除搜索",
     "closeSearch": "关闭搜索",
-    "newRequest": "新建反馈",
+    "newRequest": "许一个愿",
     "noFeedback": "还没有反馈",
     "noMatches": "没有匹配“{query}”的结果",
     "noMatchesHint": "还没有人提过 —— 来做第一个吧。",
     "comments": "{n} 条评论",
+    "upvote": "投票",
+    "removeUpvote": "取消对“{title}”的投票",
     "loading": "加载中……",
     "loadMore": "加载更多",
     "poweredBy": "技术支持 "
   },
   "roadmap": {
-    "title": "路线图",
-    "subtitle": "我们当前的战略路线图与开发进度。",
+    "title": "进度",
+    "subtitle": "正在规划、开发与完成的愿望。",
     "loading": "加载中……",
     "loadMore": "加载更多",
     "emptyColumn": "还没有{status}的条目。",
@@ -459,12 +461,12 @@
       "developer": "开发者"
     },
     "roadmap": {
-      "title": "路线图",
-      "subtitle": "按状态查看反馈"
+      "title": "进度",
+      "subtitle": "按状态查看愿望"
     },
     "boards": {
-      "title": "看板",
-      "subtitle": "按分类整理反馈",
+      "title": "愿望分类",
+      "subtitle": "按分类整理愿望",
       "create": "新建看板",
       "empty": "还没有看板",
       "noResults": "没有找到看板",

@@ -16,15 +16,15 @@ function openPostDetail(item: PostListItem) {
 <template>
   <div class="flex-1 flex flex-col min-w-0 max-h-[calc(100vh-5rem)] min-h-[500px]">
     <!-- Title area -->
-    <div class="pb-3 md:pb-6">
-      <div class="flex items-baseline gap-3">
-        <h1 class="font-heading text-xl md:text-2xl font-bold shrink-0">{{ $t('roadmap.title') }}</h1>
-        <p class="text-sm text-muted-foreground truncate">{{ $t('roadmap.subtitle') }}</p>
+    <div class="border-b border-border/75 pb-5 md:pb-7">
+      <div class="flex flex-wrap items-baseline gap-x-4 gap-y-1">
+        <h1 class="shrink-0 font-heading text-xl font-semibold leading-tight tracking-[-0.03em] sm:text-2xl md:text-[28px]">{{ $t('roadmap.title') }}</h1>
+        <p class="text-sm leading-relaxed text-muted-foreground">{{ $t('roadmap.subtitle') }}</p>
       </div>
     </div>
 
     <!-- Board area -->
-    <div class="flex-1 overflow-x-auto overflow-y-hidden min-h-[400px]">
+    <div class="flex-1 min-h-[400px] overflow-x-auto overflow-y-hidden pt-5 md:pt-6">
       <RoadmapKanban ref="kanbanRef" @open-detail="openPostDetail" />
     </div>
   </div>

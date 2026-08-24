@@ -17,30 +17,29 @@ const { boardMap } = storeToRefs(boardStore)
 <template>
   <div
     ref="cardEl"
-    class="group bg-card border border-border p-5 rounded-lg shadow-sm hover:shadow-warm transition-all cursor-pointer"
+    class="group bg-card/90 border border-border/85 p-4 rounded-xl transition-[transform,border-color,background-color] duration-200 ease-out hover:-translate-y-px hover:border-primary/45 hover:bg-card cursor-pointer"
     @click="$emit('click')"
   >
     <h4
-      class="text-base font-bold mb-2 leading-tight truncate"
+      class="text-base font-semibold leading-snug"
     >
       {{ post.title }}
     </h4>
-    <p class="text-xs text-muted-foreground line-clamp-1 mb-4">{{ post.excerpt }}</p>
 
     <!-- Bottom meta -->
-    <div class="flex items-center justify-between mt-auto pt-4 border-t border-dashed border-border/50">
+    <div class="flex items-center justify-between gap-3 mt-4 text-muted-foreground">
       <span
         v-if="post.boardId && boardMap.get(post.boardId)"
-        class="text-[10px] font-bold text-muted-foreground"
+        class="max-w-[50%] truncate rounded-full bg-muted px-2 py-1 text-[10px] font-medium text-muted-foreground"
       >
         {{ boardMap.get(post.boardId) }}
       </span>
       <span v-else />
-      <div class="flex items-center gap-3 text-muted-foreground">
-        <div class="flex items-center gap-1 text-[11px] font-bold">
-          <Icon name="lucide:chevron-up" size="14" /> {{ post.voteCount }}
+      <div class="flex shrink-0 items-center gap-2.5">
+        <div class="flex items-center gap-1 text-[11px] font-medium">
+          <Icon name="lucide:triangle" size="11" /> {{ post.voteCount }}
         </div>
-        <div class="flex items-center gap-1 text-[11px] font-bold">
+        <div class="flex items-center gap-1 text-[11px] font-medium">
           <Icon name="lucide:message-square" size="14" /> {{ post.commentCount }}
         </div>
       </div>
