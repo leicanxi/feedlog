@@ -28,7 +28,7 @@ services:
       DATABASE_URL: postgresql://feedlog:${POSTGRES_PASSWORD}@db:5432/feedlog
       BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET}
       SYSTEM_ADMIN_EMAILS: ${SYSTEM_ADMIN_EMAILS}
-      BETTER_AUTH_URL: https://wish.flowbee.top
+      BETTER_AUTH_URL: https://post.flowbee.top
 
 volumes:
   db-data:

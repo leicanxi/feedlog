@@ -39,10 +39,10 @@
     "yearsAgo": "{n}y ago"
   },
   "nav": {
-    "feedback": "Wishlist",
+    "feedback": "Feedback",
     "roadmap": "Progress",
     "changelog": "Changelog",
-    "board": "Wish Categories",
+    "board": "Request Categories",
     "members": "Members",
     "portal": "Portal",
     "workspace": "Workspace",
@@ -52,7 +52,7 @@
     "widget": "Widget"
   },
   "board": {
-    "boards": "Wish Categories",
+    "boards": "Request Categories",
     "allFeedback": "All Feedback",
     "topRequests": "Top Requests",
     "recentRequests": "Recent Requests",
@@ -62,7 +62,7 @@
     "searchPlaceholder": "Search feedback…",
     "clearSearch": "Clear search",
     "closeSearch": "Close search",
-    "newRequest": "Make a wish",
+    "newRequest": "Submit a request",
     "noFeedback": "No feedback yet",
     "noMatches": "No matches for “{query}”",
     "noMatchesHint": "Nobody’s raised this yet — be the first.",
@@ -75,7 +75,7 @@
   },
   "roadmap": {
     "title": "Progress",
-    "subtitle": "Wishes we're planning, building, and completing.",
+    "subtitle": "Requests we're planning, building, and completing.",
     "loading": "Loading...",
     "loadMore": "Load more",
     "emptyColumn": "No items in {status} yet.",
@@ -462,11 +462,11 @@
     },
     "roadmap": {
       "title": "Progress",
-      "subtitle": "Wishes by status"
+      "subtitle": "Requests by status"
     },
     "boards": {
-      "title": "Wish Categories",
-      "subtitle": "Organize wishes by category",
+      "title": "Request Categories",
+      "subtitle": "Organize requests by category",
       "create": "Create Board",
       "empty": "No boards yet",
       "noResults": "No boards found",
