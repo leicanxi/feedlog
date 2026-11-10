@@ -35,3 +35,8 @@ logs
 # Agent scratch space (screenshots, debug dumps, ad-hoc scripts)
 tmp/
 .playwright-mcp/
+
+# Incident / recon scratch space — may contain credentials, never commit
+RECON/
+.pnpm-store/
+_tmp_*/
