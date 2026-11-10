@@ -32,8 +32,44 @@ function isBlockedForSso(path: string): boolean {
   return !!suffix && BLOCKED_AUTH_ENDPOINTS.has(suffix)
 }
 
+// 前缀判断必须建立在「归一化之后的路径」上：`/api/auth/%61dmin/set-user-password`、
+// `/api/auth//admin/set-user-password`、`/api/auth/x/../admin/...` 这类写法在原始
+// path 上都对不上 `admin/`，但下游路由仍可能解析到同一个 handler。
+// 所以把解码 / 折叠斜杠 / 消解 `.` `..` 的每种形态都查一遍，任一命中即拦截。
+function pathVariants(path: string): string[] {
+  const variants = new Set<string>()
+  let current = path.split(/[?#]/)[0]!
+
+  for (let i = 0; i < 3; i++) {
+    variants.add(current)
+    let decoded: string
+    try {
+      decoded = decodeURIComponent(current)
+    }
+    catch {
+      break
+    }
+    if (decoded === current) break
+    current = decoded
+  }
+  variants.add(current)
+
+  const collapsed = current.replace(/\/{2,}/g, '/')
+  variants.add(collapsed)
+
+  const segments: string[] = []
+  for (const segment of collapsed.split('/')) {
+    if (segment === '' || segment === '.') continue
+    if (segment === '..') segments.pop()
+    else segments.push(segment)
+  }
+  variants.add(`/${segments.join('/')}`)
+
+  return [...variants]
+}
+
 export default defineEventHandler(async (event) => {
-  if (!isBlockedForSso(event.path)) return
+  if (!pathVariants(event.path).some(isBlockedForSso)) return
 
   const session = await auth.api.getSession({ headers: event.headers })
   const ssoOrgId = (session?.session as { ssoOrgId?: string | null } | undefined)?.ssoOrgId
