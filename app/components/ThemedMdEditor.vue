@@ -14,7 +14,7 @@ const attrs = useAttrs()
 
 // 编辑器的实时预览同样会把 HTML 写进 innerHTML：管理员打开/编辑一条带载荷的
 // 帖子时会当场中招。调用方原有的 sanitize（attachment 链接改写）先跑，
-// 最后统一过 DOMPurify。
+// 最后统一过 html 净化。
 const sanitize = (html: string) => {
   const passthrough = attrs.sanitize as ((h: string) => string) | undefined
   return sanitizeMarkdownHtml(typeof passthrough === 'function' ? passthrough(html) : html)
